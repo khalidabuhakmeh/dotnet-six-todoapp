@@ -1,0 +1,18 @@
+@model TodoItemViewModel
+
+<div class="row mb-3">
+    <div class="col-12">
+        <form asp-page="Todos" asp-route-listId="@Model?.ListId" method="post">
+            <div class="input-group">
+                <div class="input-group-text">
+                    <input asp-for="IsDone" type="checkbox" class="form-check-input mt-0"/>
+                </div>
+                <input asp-for="Text" type="text" class="form-control" placeholder="New List" aria-label="New Task List Title">
+                <button class="btn btn-success" type="submit">
+                    <i class="icofont-save"></i>
+                    Save
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,73 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<div class="row mb-3">
+    <div class="col-8"></div>
+    <div class="col-4">
+        <form asp-page="index" asp-page-handler="New" method="post">
+            <div class="input-group">
+                <input asp-for="Name" type="text" class="form-control" placeholder="New List" aria-label="New Task List Title">
+                <button class="btn btn-success" type="submit">
+                    <i class="icofont-plus"></i>
+                    New
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<table class="table container-fluid">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Created</th>
+        <th scope="col">Tasks</th>
+        <th scope="col" title="Actions"></th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (!Model.Lists.Any())
+    {
+        <tr>
+            <td colspan="100%">
+                <div class="alert alert-info m-3">
+                    <i class="icofont-info"></i> No Todo Lists
+                </div>
+            </td>
+        </tr>
+    }
+    @foreach (var list in Model.Lists)
+    {
+        <tr>
+            <th scope="row">@list.Id</th>
+            <td>@list.Name</td>
+            <td>
+                @list.CreatedAt.ToLocalTime().ToShortDateString()
+            </td>
+            <td class="text-center">
+                <p>@list.TotalItemsCompleted out of @list.TotalItemsCount</p>
+                <div class="progress">
+                    <div class="progress-bar" role="progressbar" style="width: @list.Progress%;" aria-valuenow="@list.TotalItemsCompleted" aria-valuemin="0" aria-valuemax="@list.TotalItemsCount">
+                    </div>
+                </div>
+            </td>
+            <td>
+                <a class="btn btn-primary" asp-page="Lists" asp-route-id="@list.Id">
+                    <i class="icofont-edit"></i>
+                    Edit
+                </a>
+                <button type="submit" class="btn btn-danger" form="delete" formaction="@Url.Page("Lists", "Delete", new { list.Id})">
+                    <i class="icofont-delete"></i>
+                    Delete
+                </button>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<form id="delete" method="post"></form>

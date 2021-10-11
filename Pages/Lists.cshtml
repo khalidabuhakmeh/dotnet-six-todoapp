@@ -1,0 +1,61 @@
+@page "/lists/{id:int}"
+@model TodoApp.Pages.Lists
+
+<h1>List: @Model.List.Name</h1>
+
+@await Html.PartialAsync("_New", new TodoItemViewModel { ListId = Model.Id } )
+
+<table class="table container-fluid">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Text</th>
+        <th scope="col">Date</th>
+        <th scope="col" title="Actions"></th>
+    </tr>
+    </thead>
+    <tbody>
+    @if (!Model.Todos.Any())
+    {
+        <tr>
+            <td colspan="100%">
+                <div class="alert alert-info m-3">
+                    <i class="icofont-info"></i> No Todos
+                </div>
+            </td>
+        </tr>
+    }
+    @foreach (var item in Model.Todos)
+    {
+        <tr>
+            <th scope="row">@item.Id</th>
+            <td>
+              @if (item.IsDone) { <i class="text-success icofont-check-circled"></i> } @item.Text
+            </td>
+            <td class="text-center">
+               @item.LastUpdatedAt.ToLocalTime()
+            </td>
+            <td>
+                @if (!item.IsDone)
+                {
+                    <button class="btn btn-success" type="submit" formaction="@Url.Page(nameof(Todos), "Update", new {listId = item.ListId, item.Id})" form="todos" name="@nameof(TodoItemModel.IsDone)" value="true">
+                        <i class="icofont-check"></i> Finish
+                    </button>
+                }
+                else
+                {
+                    <button class="btn btn-warning" type="submit" formaction="@Url.Page(nameof(Todos), "Update", new {listId = item.ListId, item.Id})" form="todos" name="@nameof(TodoItemModel.IsDone)" value="false">
+                        <i class="icofont-undo"></i> Undo
+                    </button>
+                }
+                <button type="submit" class="btn btn-danger" form="todos" formaction="@Url.Page(nameof(Todos), "Delete", new {listId = item.ListId, item.Id })">
+                    <i class="icofont-delete"></i>
+                    Delete
+                </button>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>
+
+<form id="todos" method="post"></form>
