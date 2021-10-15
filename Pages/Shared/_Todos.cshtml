@@ -1,0 +1,77 @@
+@model TodoApp.Pages.Lists
+
+@if (Model?.AddedTaskText is {})
+{
+    <div hx-swap-oob="true:#flash-wrapper">
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <div>
+                <i class="icofont-check-alt"></i> <strong>Success!</strong> Added task "@Model?.AddedTaskText"
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+}
+
+<table id="todos" class="table container-fluid">
+    <thead>
+    <tr>
+        <th scope="col">#</th>
+        <th scope="col">Text</th>
+        <th scope="col">Date</th>
+        <th scope="col" title="Actions"></th>
+    </tr>
+    </thead>
+    <tbody hx-target="closest tr" hx-swap="outerHTML swap:100ms">
+    @if (!Model.Todos.Any())
+    {
+        <tr>
+            <td colspan="100%">
+                <div class="alert alert-info m-3">
+                    <i class="icofont-info"></i> No Todos
+                </div>
+            </td>
+        </tr>
+    }
+    @foreach (var item in Model.Todos)
+    {
+        <tr>
+            <th scope="row">@item.Id</th>
+            <td>
+                @if (item.IsDone)
+                {
+                    <i class="text-success icofont-check-circled"></i>
+                }
+                @item.Text
+            </td>
+            <td class="text-center">
+                @item.LastUpdatedAt.ToLocalTime()
+            </td>
+            <td>
+                <button class="btn @(item.IsDone ? "btn-warning" : "btn-success")"
+                        hx-post
+                        hx-page="Todos"
+                        hx-page-handler="Update"
+                        hx-route-listId="@item.ListId"
+                        hx-route-id="@item.Id"
+                        hx-swap="outerHTML"
+                        hx-vals='{ "@nameof(TodoItemModel.IsDone)" : "@(!item.IsDone)" }'>
+                    <i class="@(item.IsDone ? "icofont-recycle": "icofont-check")"></i>
+                    @(item.IsDone ? "Undo" : "Finish")
+                </button>
+                <button
+                    hx-post
+                        hx-page="@nameof(Todos)"
+                        hx-page-handler="Delete"
+                        hx-route-listId="@item.ListId"
+                        hx-route-id="@item.Id"
+                        hx-confirm="Are you sure?" hx-target="closest tr" hx-swap="outerHTML swap:100ms"
+                        class="btn btn-danger"
+                        type="button">
+                    <i class="icofont-delete"></i>
+                    Delete
+                </button>
+            </td>
+        </tr>
+    }
+    </tbody>
+</table>

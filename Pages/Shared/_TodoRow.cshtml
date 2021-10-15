@@ -1,0 +1,40 @@
+@model TodoApp.Models.TodoItem
+@{ var item = Model; }
+<tr>
+    <th scope="row">@item.Id</th>
+    <td>
+        @if (item.IsDone)
+        {
+            <i class="text-success icofont-check-circled"></i>
+        }
+        @item.Text
+    </td>
+    <td class="text-center">
+        @item.LastUpdatedAt.ToLocalTime()
+    </td>
+    <td>
+        <button class="btn @(item.IsDone ? "btn-warning" : "btn-success")"
+                hx-post
+                hx-page="Todos"
+                hx-page-handler="Update"
+                hx-route-listId="@item.ListId"
+                hx-route-id="@item.Id"
+                hx-swap="outerHTML"
+                hx-vals='{ "@nameof(TodoItemModel.IsDone)" : "@(!item.IsDone)" }'>
+            <i class="@(item.IsDone ? "icofont-recycle": "icofont-check")"></i>
+            @(item.IsDone ? "Undo" : "Finish")
+        </button>
+        <button
+            hx-post
+            hx-page="@nameof(Todos)"
+            hx-page-handler="Delete"
+            hx-route-listId="@item.ListId"
+            hx-route-id="@item.Id"
+            hx-confirm="Are you sure?"
+            class="btn btn-danger"
+            type="button">
+            <i class="icofont-delete"></i>
+            Delete
+        </button>
+    </td>
+</tr>
