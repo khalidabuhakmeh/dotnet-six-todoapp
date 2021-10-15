@@ -47,13 +47,19 @@ public class Todos : PageModel
     public async Task<IActionResult> OnPostDelete()
     {
         var item = await _database.Items.Where(i => i.ListId == ListId && i.Id == Id).FirstOrDefaultAsync();
+        
         if (item is not null)
         {
             _database.Items.Remove(item);
             await _database.SaveChangesAsync();
         }
+        
+        var count = await _database.Items.CountAsync(i => i.ListId == ListId);
 
-        return StatusCode(Status202Accepted);
+        // return empty row
+        return count == 0 
+            ? Partial("_Empty")
+            : StatusCode(Status202Accepted);
     }
 
     public async Task<IActionResult> OnPostUpdate([FromForm] bool isDone)

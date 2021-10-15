@@ -24,13 +24,7 @@
     <tbody hx-target="closest tr" hx-swap="outerHTML swap:100ms">
     @if (!Model.Todos.Any())
     {
-        <tr>
-            <td colspan="100%">
-                <div class="alert alert-info m-3">
-                    <i class="icofont-info"></i> No Todos
-                </div>
-            </td>
-        </tr>
+        @(await Html.PartialAsync("_Empty"))
     }
     @foreach (var item in Model.Todos)
     {
