@@ -29,7 +29,7 @@
         <th scope="col" title="Actions"></th>
     </tr>
     </thead>
-    <tbody>
+    <tbody hx-confirm="Are you sure?" hx-target="closest tr" hx-swap="outerHTML swap:100ms">
     @if (!Model.Lists.Any())
     {
         <tr>
@@ -60,7 +60,12 @@
                     <i class="icofont-edit"></i>
                     Edit
                 </a>
-                <button type="submit" class="btn btn-danger" form="delete" formaction="@Url.Page("Lists", "Delete", new { list.Id})">
+                <button hx-post
+                        hx-page="@nameof(Lists)"
+                        hx-page-handler="Delete"
+                        hx-route-id="@list.Id"
+                        class="btn btn-danger"
+                        type="button">
                     <i class="icofont-delete"></i>
                     Delete
                 </button>

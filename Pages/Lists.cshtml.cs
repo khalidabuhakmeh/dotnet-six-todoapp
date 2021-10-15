@@ -1,3 +1,4 @@
+using Htmx;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -9,19 +10,21 @@ public class Lists : PageModel
 {
     private readonly Database _database;
 
-    [BindProperty(SupportsGet = true)]
-    public int Id { get; set; }
+    [BindProperty(SupportsGet = true)] public int Id { get; set; }
 
     public TodoList List { get; set; } = null!;
 
-    public IEnumerable<TodoItem> Todos => 
+    public IEnumerable<TodoItem> Todos =>
         List?.Items.ToList() ?? Enumerable.Empty<TodoItem>();
+
+    [TempData]
+    public string AddedTaskText { get; set; } = string.Empty;
 
     public Lists(Database database)
     {
         _database = database;
     }
-    
+
     public async Task<IActionResult> OnGet()
     {
         var list = await _database
@@ -36,7 +39,9 @@ public class Lists : PageModel
 
         List = list;
 
-        return Page();
+        return Request.IsHtmx()
+            ? Partial("_Todos", this)
+            : Page();
     }
 
     public async Task<IActionResult> OnPostDelete()
@@ -54,6 +59,6 @@ public class Lists : PageModel
             await _database.SaveChangesAsync();
         }
 
-        return RedirectToPage("Index");
+        return StatusCode(Status202Accepted);
     }
 }

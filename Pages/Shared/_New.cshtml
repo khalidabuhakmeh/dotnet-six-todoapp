@@ -2,7 +2,12 @@
 
 <div class="row mb-3">
     <div class="col-12">
-        <form asp-page="Todos" asp-route-listId="@Model?.ListId" method="post">
+        <form method="post"
+              hx-post
+              hx-page="@nameof(Todos)"
+              hx-route-listId="@Model?.ListId"
+              hx-target="#todos"
+              >
             <div class="input-group">
                 <div class="input-group-text">
                     <input asp-for="IsDone" type="checkbox" class="form-check-input mt-0"/>

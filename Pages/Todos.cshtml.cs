@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -35,9 +36,14 @@ public class Todos : PageModel
         list.Items.Add(item);
         await _database.SaveChangesAsync();
 
-        return RedirectToPage(nameof(Pages.Lists), new {id = list.Id});
+        TempData[nameof(Lists.AddedTaskText)] = item.Text;
+        return RedirectToPage(nameof(Lists), new {id = list.Id});
     }
 
+    /// <summary>
+    /// HTMX Powered
+    /// </summary>
+    /// <returns></returns>
     public async Task<IActionResult> OnPostDelete()
     {
         var item = await _database.Items.Where(i => i.ListId == ListId && i.Id == Id).FirstOrDefaultAsync();
@@ -46,8 +52,8 @@ public class Todos : PageModel
             _database.Items.Remove(item);
             await _database.SaveChangesAsync();
         }
-        
-        return RedirectToPage(nameof(Pages.Lists), new {id = ListId});
+
+        return StatusCode(Status202Accepted);
     }
 
     public async Task<IActionResult> OnPostUpdate([FromForm] bool isDone)
@@ -59,8 +65,8 @@ public class Todos : PageModel
             item.LastUpdatedAt = DateTime.UtcNow;
             await _database.SaveChangesAsync();
         }
-        
-        return RedirectToPage(nameof(Lists), new {id = ListId});
+
+        return Partial("_TodoRow", item);
     }
 }
 

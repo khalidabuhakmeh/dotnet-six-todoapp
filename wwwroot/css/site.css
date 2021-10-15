@@ -63,3 +63,9 @@ body {
   white-space: nowrap;
   line-height: 60px;
 }
+
+/* HTMX Transitions */
+tr.htmx-swapping td {
+  opacity: 0;
+  transition: opacity 1s ease-out;
+}
